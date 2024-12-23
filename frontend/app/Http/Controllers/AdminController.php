@@ -20,6 +20,7 @@ class AdminController extends Controller
     public $payments;
     public $news;
     public $libraries;
+    public $alumni;
     public function __construct()
     {
         $this->token = TokenController::get();
@@ -35,6 +36,7 @@ class AdminController extends Controller
         $this->payments = PembayaranController::getPayments();
         $this->news = BeritaController::getNews();
         $this->libraries = PerpustakaanController::getPerpustakaan();
+        $this->alumni = AdminController::getAlumni();
     }
 
     public function getUsers()
@@ -148,6 +150,18 @@ class AdminController extends Controller
                 'X-API-TOKEN' => $this->token
             ])->get('http://localhost:3000/api/log');
 
+            return $response->json();
+        } else {
+            redirect('/auth/login/admin');
+        }
+    }
+
+    public function getAlumni()
+    {
+        if ($this->token) {
+            $response = Http::withHeaders([
+                'X-API-TOKEN' => $this->token
+            ])->get('http://localhost:3000/api/alumni');
             return $response->json();
         } else {
             redirect('/auth/login/admin');
@@ -359,7 +373,21 @@ class AdminController extends Controller
     public function kritikSaran()
     {
         if ($this->admin['data']['role'] === "ADMIN") {
-            return view('admin.kritikSaran.index', ['admin' => $this->admin]);
+            $kritikSaran = Http::withHeaders([
+                'X-API-TOKEN' => $this->token
+            ])->get('http://localhost:3000/api/kritikSaran')->json();
+            return view('admin.kritikSaran.index', ['admin' => $this->admin, 'feedbacks' => $kritikSaran]);
+        }
+        return back()->withInput();
+    }
+
+    public function server()
+    {
+        if ($this->admin['data']['role'] === "ADMIN") {
+            $server = Http::withHeaders([
+                'X-API-TOKEN' => $this->token
+            ])->get('http://localhost:3000/maintenance')->json();
+            return view('admin.server', ['admin' => $this->admin, 'server' => $server]);
         }
         return back()->withInput();
     }
