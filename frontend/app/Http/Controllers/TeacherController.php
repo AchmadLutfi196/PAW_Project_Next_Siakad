@@ -12,12 +12,16 @@ class TeacherController extends Controller
     public $student;
     public $teacher;
     public $announcements;
+    public $news;
+    public $libraries;
 
     public function __construct()
     {
         $this->token = TokenController::get();
         $this->teacher = TeacherController::getTeacherDetail();
         $this->announcements = PengumumanController::getAllAnnouncements();
+        $this->news = BeritaController::getNews();
+        $this->libraries = PerpustakaanController::getPerpustakaan();
     }
 
     public function getTeachers()
@@ -246,6 +250,32 @@ class TeacherController extends Controller
     {
         if ($this->teacher['data']['role'] === "TEACHER") {
             return view('dosen.dosen-cuti-req');
+        }
+        return back()->withInput();
+    }
+
+    public function kritikSaranDosen()
+    {
+        if ($this->teacher['data']['role'] === "TEACHER") {
+            return view('dosen.dosen-kritik-saran', [
+                'teacher' => $this->teacher
+            ]);
+        }
+        return back()->withInput();
+    }
+
+    public function berita()
+    {
+        if ($this->teacher['data']['role'] === "TEACHER") {
+            return view('dosen.dosen-berita', [ 'teacher' => $this->teacher, 'news' => $this->news]);
+        }
+        return back()->withInput();
+    }
+
+    public function perpustakaan()
+    {
+        if ($this->teacher['data']['role'] === "TEACHER") {
+            return view('dosen.dosen-perpustakaan', [ 'teacher' => $this->teacher,  'libraries' => $this->libraries['status'] == 200 ? $this->libraries : null]);
         }
         return back()->withInput();
     }

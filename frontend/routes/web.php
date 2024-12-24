@@ -5,10 +5,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TokenController;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $news = Http::get('http://localhost:3000/api/berita')->json();
+    return view('welcome', compact('news'));
 });
 
 Route::prefix('auth')->group(function () {
@@ -74,6 +76,9 @@ Route::prefix('student')->group(function () {
     Route::get('/payment/status', [StudentController::class, 'statusPembayaran']);
     Route::get('/profile', [StudentController::class, 'profile']);
     Route::get('/profile/update', [StudentController::class, 'editProfile']);
+    Route::get('/kritik-saran', [StudentController::class, 'kritikSaran']);
+    Route::get('/berita', [StudentController::class, 'berita']);
+    Route::get('/perpustakaan', [StudentController::class, 'perpustakaan']);
 });
 
 
@@ -92,6 +97,9 @@ Route::prefix('dosen')->group(function () {
     Route::get('/validasi', [TeacherController::class, 'validation'])->name('dosen.validasi');
     Route::get('/validasi/detail/{studentId}', [TeacherController::class, 'validate'])->name('dosen.detail.krs');
     Route::get('/cuti-req', [TeacherController::class, 'cutiReq'])->name('dosen.cuti-req');
+    Route::get('/kritik-saran', [TeacherController::class, 'kritikSaranDosen'])->name('dosen.kritik-saran');
+    Route::get('/berita', [TeacherController::class, 'berita'])->name('dosen.berita');
+    Route::get('/perpustakaan', [TeacherController::class, 'perpustakaan'])->name('dosen.perpustakaan');
     Route::prefix('materi')->group(function () {
         Route::get('/', [TeacherController::class, 'materi']);
         Route::get('/tambah', [TeacherController::class, 'materiAdd'])->name('dosen.materi.tambah');

@@ -78,7 +78,7 @@
         try {
             const token = await axios.post('/token/get-token').then(res => res.data);
             const response = await axios.patch(`http://localhost:3000/api/library`, {
-                id: parseInt(id),
+                id,
                 title,
                 author,
                 page: parseInt(page),
